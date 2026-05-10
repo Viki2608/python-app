@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: python-ingress-nginx
-  namespace: ingress-nginx
+  name: python-haproxy
+  namespace: haproxy-system
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: python-ingress-nginx
+      app: python-haproxy
   template:
     metadata:
       labels:
-        app: python-ingress-nginx
+        app: python-haproxy
     spec:
       containers:
       - name: poc
@@ -22,12 +22,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: python-nginx-service
-  namespace: ingress-nginx
+  name: haproxy-service
+  namespace: haproxy-system
 spec:
-  type: ClusterIP  # Hidden inside the cluster
+  type: ClusterIP
   selector:
-    app: python-ingress-nginx
+    app: python-haproxy
   ports:
   - port: 80
     targetPort: 8000

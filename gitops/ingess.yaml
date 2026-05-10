@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: haproxy-ingress
+  namespace: haproxy-system
+  annotations:
+    kubernetes.io/ingress.class: "haproxy"
+    haproxy.org/ssl-client-verify: "required"
+    haproxy.org/client-ca: "haproxy-system/my-ca-secret"
+    haproxy.org/ssl-client-cert-header: "X-SSL-Client-Cert"
+spec:
+  ingressClassName: haproxy
+  tls:
+  - hosts:
+    - haproxy.35.184.51.207.nip.io
+    secretName: haproxy-server-certs
+  rules:
+  - host: haproxy.35.184.51.207.nip.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: haproxy-service
+            port:
+              number: 80
