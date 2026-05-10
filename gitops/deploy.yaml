@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ingress-nginx
+  name: python-ingress-nginx
   namespace: ingress-nginx
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ingress-nginx
+      app: python-ingress-nginx
   template:
     metadata:
       labels:
-        app: ingress-nginx
+        app: python-ingress-nginx
     spec:
       containers:
       - name: poc
@@ -27,7 +27,7 @@ metadata:
 spec:
   type: ClusterIP  # Hidden inside the cluster
   selector:
-    app: ingress-nginx
+    app: python-ingress-nginx
   ports:
   - port: 80
     targetPort: 8000
