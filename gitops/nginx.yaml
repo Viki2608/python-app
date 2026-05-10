@@ -1,0 +1,49 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/auth-tls-verify-client: "on"
+    nginx.ingress.kubernetes.io/auth-tls-secret: "default/my-ca-secret"
+    nginx.ingress.kubernetes.io/auth-tls-pass-certificate-to-upstream: "true"
+
+spec:
+  tls:
+  - hosts:
+    - apple.34.63.84.126.nip.io
+    secretName: nginx-server-certs
+
+  rules:
+  - host: apple.34.63.84.126.nip.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: apple-service
+            port:
+              number: 80
+
+  - host: banana.34.63.84.126.nip.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: banana-service
+            port:
+              number: 80
+
+  - host: cherry.34.63.84.126.nip.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: cherry-service
+            port:
+              number: 80

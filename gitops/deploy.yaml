@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apple-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apple
+  template:
+    metadata:
+      labels:
+        app: apple
+    spec:
+      containers:
+      - name: id-validator
+        image: us-central1-docker.pkg.dev/playground-s-11-8790ac2d/my-repo/id-validator:v4
+        ports:
+        - containerPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: apple-service
+spec:
+  type: ClusterIP  # Hidden inside the cluster
+  selector:
+    app: apple
+  ports:
+  - port: 80
+    targetPort: 8000
+---
+# App 2 (Banana)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: banana-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: banana
+  template:
+    metadata:
+      labels:
+        app: banana
+    spec:
+      containers:
+      - name: banana
+        image: hashicorp/http-echo
+        args: ["-text=Hello from the BANANA app!"]
+        ports:
+        - containerPort: 5678
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: banana-service
+spec:
+  type: ClusterIP
+  selector:
+    app: banana
+  ports:
+  - port: 80
+    targetPort: 5678
+---
+# App 3 (Cherry)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cherry-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cherry
+  template:
+    metadata:
+      labels:
+        app: cherry
+    spec:
+      containers:
+      - name: cherry
+        image: hashicorp/http-echo
+        args: ["-text=Hello from the CHERRY app!"]
+        ports:
+        - containerPort: 5678
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cherry-service
+spec:
+  type: ClusterIP
+  selector:
+    app: cherry
+  ports:
+  - port: 80
+    targetPort: 5678
