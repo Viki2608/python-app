@@ -1,0 +1,9 @@
+# 3. Middleware to inject the client cert into the header
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: pass-client-cert
+  namespace: gateway-api-demo
+spec:
+  passTLSClientCert:
+    pem: true # Sends the raw PEM cert in the 'X-Forwarded-Tls-Client-Cert' header

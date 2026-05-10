@@ -1,85 +1,74 @@
 import urllib.parse
-from fastapi import FastAPI, Header, HTTPException, status, Request
+import base64
+import logging
+from fastapi import FastAPI, HTTPException, status, Request
 from cryptography import x509
 from cryptography.hazmat.backends import default_backend
 
-app = FastAPI(title="Identity Validator")
+# Setup Logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("DynamicProxyValidator")
 
+app = FastAPI(title="Adaptive Identity Validator")
 
-def get_cn_from_cert(cert_pem: str) -> str:
+def get_cn_from_cert(raw_cert: str, format_type: str) -> str:
+    """Decodes cert based on format: 'pem' (NGINX/Traefik) or 'der' (HAProxy)"""
     try:
-        # 1. URL-decode the certificate from NGINX
-        decoded_cert = urllib.parse.unquote(cert_pem)
+        if format_type == "der":
+            cert_data = base64.b64decode(raw_cert)
+            cert = x509.load_der_x509_certificate(cert_data, default_backend())
+        else:
+            decoded_pem = urllib.parse.unquote(raw_cert)
+            cert = x509.load_pem_x509_certificate(decoded_pem.encode(), default_backend())
 
-        # 2. Encode to bytes
-        cert_data = decoded_cert.encode("utf-8")
-
-        # 3. Parse PEM certificate
-        cert = x509.load_pem_x509_certificate(
-            cert_data,
-            default_backend()
-        )
-
-        # 4. Extract CN
-        cn_attributes = cert.subject.get_attributes_for_oid(
-            x509.NameOID.COMMON_NAME
-        )
-
-        if not cn_attributes:
-            return ""
-
-        return cn_attributes[0].value
-
+        cn_attributes = cert.subject.get_attributes_for_oid(x509.NameOID.COMMON_NAME)
+        return cn_attributes[0].value if cn_attributes else "No-CN"
     except Exception as e:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Invalid Certificate: {str(e)}"
-        )
-
+        logger.error(f"Cert parse error: {str(e)}")
+        return None
 
 @app.get("/validate")
-async def validate_user(
-    request: Request,
-    user_id: str
-):
-    ssl_client_cert = (
-    request.headers.get("x-forwarded-tls-client-cert") or
-    request.headers.get("x-ssl-client-cert") or
-    request.headers.get("ssl-client-cert")
-)
-    # Print all headers
-    print("\n===== Incoming Headers =====")
-    for key, value in request.headers.items():
-        print(f"{key}: {value}")
-    print("============================\n")
+async def validate_user(request: Request, user_id: str):
+    headers = request.headers
+    detected_proxy = "Unknown"
+    cert_value = None
+    cert_format = "pem"
 
-    # Print raw cert header
-    print(f"Received raw cert header:\n{ssl_client_cert}")
+    # 1. Detection Logic (Fingerprinting)
+    if headers.get("x-proxy-id") == "haproxy-ingress":
+        detected_proxy = "HAProxy"
+        cert_value = headers.get("ssl-client-cert")
+        cert_format = "der"
+    
+    elif headers.get("x-forwarded-tls-client-cert"):
+        detected_proxy = "Traefik (Gateway API or Ingress)"
+        cert_value = headers.get("x-forwarded-tls-client-cert")
+        cert_format = "pem"
 
-    if not ssl_client_cert:
+    elif headers.get("ssl-client-cert"):
+        detected_proxy = "NGINX Ingress"
+        cert_value = headers.get("ssl-client-cert")
+        cert_format = "pem"
+
+    # 2. Validation Logic
+    logger.info(f"Request received via: {detected_proxy}")
+
+    if not cert_value:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Client certificate missing"
+            status_code=status.HTTP_401_UNAUTHORIZED, 
+            detail=f"No client certificate found for {detected_proxy}"
         )
 
-    # Extract CN from certificate
-    cert_user_id = get_cn_from_cert(ssl_client_cert)
+    cert_cn = get_cn_from_cert(cert_value, cert_format)
 
-    print(f"Certificate CN: {cert_user_id}")
-    print(f"Requested user_id: {user_id}")
+    if not cert_cn or cert_cn != user_id:
+        logger.warning(f"Auth Failed: Proxy={detected_proxy}, CertCN={cert_cn}, Input={user_id}")
+        raise HTTPException(status_code=403, detail="Identity Mismatch")
 
-    # Compare identity
-    if cert_user_id != user_id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail=(
-                f"Identity Mismatch: Cert represents "
-                f"'{cert_user_id}', but request claims "
-                f"to be '{user_id}'"
-            )
-        )
-
+    logger.info(f"Auth Success: Proxy={detected_proxy}, User={cert_cn}")
+    
     return {
         "status": "success",
-        "message": f"Identity verified for user: {cert_user_id}"
+        "detected_proxy": detected_proxy,
+        "verified_user": cert_cn
     }
