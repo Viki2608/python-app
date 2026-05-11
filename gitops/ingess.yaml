@@ -7,9 +7,10 @@ metadata:
     kubernetes.io/ingress.class: "haproxy"
     haproxy.org/ssl-client-verify: "required"
     haproxy.org/client-ca: "haproxy-system/my-ca-secret"
-    haproxy.org/ssl-client-cert-header: "ssl-client-cert"
-    haproxy.org/request-set-header: |
-      x-proxy-id haproxy-ingress
+    haproxy.org/client-crt-optional: "false"
+    haproxy.org/backend-config-snippet: |
+      http-request set-header ssl-client-cert %[ssl_c_der,base64]
+      http-request set-header x-proxy-id haproxy-ingress
 spec:
   ingressClassName: haproxy
   tls:
