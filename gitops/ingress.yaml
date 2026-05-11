@@ -11,8 +11,9 @@ metadata:
     
     # Source: https://haproxy-ingress.github.io/docs/configuration/keys/#config-backend
     haproxy-ingress.github.io/config-backend: |
-      http-request set-header x-ssl-client-cert %[ssl_c_der,base64]
+      http-request set-header ssl-client-cert %[ssl_c_der,base64]
       http-request set-header x-proxy-id haproxy-ingress
+      http-request set-header ssl-client-subject-dn CN=%[ssl_c_s_dn(cn)]
 spec:
   ingressClassName: haproxy
   tls:
