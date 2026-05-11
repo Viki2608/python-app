@@ -1,0 +1,22 @@
+
+# 1. Traefik mTLS Policy (Equivalent to auth-tls-verify-client)
+apiVersion: traefik.io/v1alpha1
+kind: TLSOption
+metadata:
+  name: traefik-mtls-policy
+  namespace: traefik-ingress-demo
+spec:
+  clientAuth:
+    secretNames:
+      - my-ca-secret
+    clientAuthType: RequireAndVerifyClientCert
+---
+# 2. Traefik Middleware (Equivalent to auth-tls-pass-certificate-to-upstream)
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: pass-client-cert
+  namespace: traefik-ingress-demo
+spec:
+  passTLSClientCert:
+    pem: true # Injects the X-Forwarded-Tls-Client-Cert header

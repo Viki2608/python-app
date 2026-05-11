@@ -1,33 +1,33 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: python-ingress-nginx
-  namespace: ingress-nginx
+  name: python-traefik-demo
+  namespace: traefik-ingress-demo
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: python-ingress-nginx
+      app: python-traefik-demo
   template:
     metadata:
       labels:
-        app: python-ingress-nginx
+        app: python-traefik-demo
     spec:
       containers:
       - name: poc
-        image: us-central1-docker.pkg.dev/playground-s-11-07d68427/my-repo/poc:v1     
+        image: us-central1-docker.pkg.dev/playground-s-11-07d68427/my-repo/poc:v1      
         ports:
         - containerPort: 8000
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: python-nginx-service
-  namespace: ingress-nginx
+  name: traefik-service
+  namespace: traefik-ingress-demo
 spec:
-  type: ClusterIP  # Hidden inside the cluster
+  type: ClusterIP
   selector:
-    app: python-ingress-nginx
+    app: python-traefik-demo
   ports:
   - port: 80
     targetPort: 8000
