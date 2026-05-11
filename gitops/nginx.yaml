@@ -13,11 +13,11 @@ spec:
   ingressClassName: nginx
   tls:
   - hosts:
-    - nginx.136.113.249.64.nip.io
+    - nginx.34.123.186.239.nip.io
     secretName: nginx-server-certs
 
   rules:
-  - host: nginx.136.113.249.64.nip.io
+  - host: nginx.34.123.186.239.nip.io
     http:
       paths:
       - path: /
