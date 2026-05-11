@@ -6,8 +6,8 @@ metadata:
   namespace: traefik-ingress-demo
   annotations:
     kubernetes.io/ingress.class: "traefik-ingress"
-    traefik.ingress.kubernetes.io/router.tls.options: "namespace: traefik-ingress-demo-traefik-mtls-policy@kubernetescrd"
-    traefik.ingress.kubernetes.io/router.middlewares: "namespace: traefik-ingress-demo-pass-client-cert@kubernetescrd"
+    traefik.ingress.kubernetes.io/router.tls.options: "traefik-ingress-demo-traefik-mtls-policy@kubernetescrd"
+    traefik.ingress.kubernetes.io/router.middlewares: "traefik-ingress-demo-pass-client-cert@kubernetescrd"
 spec:
   ingressClassName: traefik-ingress
   tls:
