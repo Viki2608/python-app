@@ -5,10 +5,12 @@ metadata:
   namespace: haproxy-system
   annotations:
     kubernetes.io/ingress.class: "haproxy"
-    haproxy.org/ssl-client-verify: "required"
-    haproxy.org/client-ca: "haproxy-system/my-ca-secret"
-    haproxy.org/client-crt-optional: "false"
-    haproxy.org/backend-config-snippet: |
+    # 1. Community Edition mTLS Annotations
+    haproxy.org/auth-tls-secret: "haproxy-system/my-ca-secret"
+    haproxy.org/auth-tls-verify-client: "on"
+    
+    # 2. Community Edition Snippet Annotation
+    haproxy.org/config-backend: |
       http-request set-header ssl-client-cert %[ssl_c_der,base64]
       http-request set-header x-proxy-id haproxy-ingress
 spec:
