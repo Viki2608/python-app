@@ -1,30 +1,32 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: my-ingress
-  namespace: ingress-nginx
+  name: haproxy-ingress
+  namespace: haproxy-system
   annotations:
-    kubernetes.io/ingress.class: "nginx"
-    nginx.ingress.kubernetes.io/auth-tls-verify-client: "on"
-    nginx.ingress.kubernetes.io/auth-tls-secret: "ingress-nginx/my-ca-secret"
-    nginx.ingress.kubernetes.io/auth-tls-pass-certificate-to-upstream: "true"
-
+    kubernetes.io/ingress.class: "haproxy"
+    # Source: https://haproxy-ingress.github.io/docs/configuration/keys/#auth-tls-secret
+    haproxy-ingress.github.io/auth-tls-secret: "haproxy-system/my-ca-secret"
+    haproxy-ingress.github.io/auth-tls-verify-client: "on"
+    
+    # Source: https://haproxy-ingress.github.io/docs/configuration/keys/#config-backend
+    haproxy-ingress.github.io/config-backend: |
+      http-request set-header x-ssl-client-cert %[ssl_c_der,base64]
+      http-request set-header x-proxy-id haproxy-ingress
 spec:
-  ingressClassName: nginx
+  ingressClassName: haproxy
   tls:
   - hosts:
-    - nginx.34.123.186.239.nip.io
-    secretName: nginx-server-certs
-
+    - haproxy.34.122.191.191.nip.io
+    secretName: haproxy-server-certs
   rules:
-  - host: nginx.34.123.186.239.nip.io
+  - host: haproxy.34.122.191.191.nip.io
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: python-nginx-service
+            name: haproxy-service
             port:
               number: 80
-
