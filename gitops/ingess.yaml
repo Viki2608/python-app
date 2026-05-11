@@ -14,10 +14,10 @@ spec:
   ingressClassName: haproxy
   tls:
   - hosts:
-    - haproxy.35.184.51.207.nip.io
+    - haproxy.34.122.191.191.nip.io
     secretName: haproxy-server-certs
   rules:
-  - host: haproxy.35.184.51.207.nip.io
+  - host: haproxy.34.122.191.191.nip.io
     http:
       paths:
       - path: /
