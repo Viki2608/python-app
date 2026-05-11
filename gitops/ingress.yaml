@@ -13,7 +13,6 @@ spec:
   tls:
   - hosts:
     - traefik.34.42.98.217.nip.io
-    secretName: traefik-server-certs
   rules:
   - host: traefik.34.42.98.217.nip.io
     http:
