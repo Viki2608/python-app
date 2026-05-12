@@ -16,7 +16,7 @@ spec:
       certificateRefs:
       - name: nginx-server-certs
 ---
-# 3. Envoy ClientTrafficPolicy (Enforces mTLS)
+# 3. Envoy ClientTrafficPolicy (Enforces mTLS & Forwards Cert)
 apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: ClientTrafficPolicy
 metadata:
@@ -33,6 +33,13 @@ spec:
       - name: my-ca-secret
         kind: Secret
         group: ""
+  # Add this block to safely forward the certificate to Python
+  headers:
+    xForwardedClientCert:
+      mode: SanitizeSet
+      certDetailsToAdd:
+      - Subject
+      - Cert
 ---
 # 2. The HTTPRoute (Routes traffic to your unified FastAPI service)
 apiVersion: gateway.networking.k8s.io/v1
