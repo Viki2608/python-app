@@ -15,13 +15,24 @@ spec:
       mode: Terminate
       certificateRefs:
       - name: nginx-server-certs
-      # Standard Gateway API v1.1 mTLS validation
-      frontendValidation:
-        caCertificateRefs:
-        - name: my-ca-secret
-          kind: Secret
-          group: ""
-
+---
+# 3. Envoy ClientTrafficPolicy (Enforces mTLS)
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: ClientTrafficPolicy
+metadata:
+  name: enforce-mtls-policy
+  namespace: envoy
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: Gateway
+    name: envoy-mtls-gateway
+  tls:
+    clientValidation:
+      caCertificateRefs:
+      - name: my-ca-secret
+        kind: Secret
+        group: ""
 ---
 # 2. The HTTPRoute (Routes traffic to your unified FastAPI service)
 apiVersion: gateway.networking.k8s.io/v1
