@@ -12,9 +12,9 @@ spec:
   ingressClassName: traefik-ingress
   tls:
   - hosts:
-    - traefik.34.42.98.217.nip.io
+    - traefik.34.121.24.13.nip.io
   rules:
-  - host: traefik.34.42.98.217.nip.io
+  - host: traefik.34.121.24.13.nip.io
     http:
       paths:
       - path: /
