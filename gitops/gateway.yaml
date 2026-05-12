@@ -10,7 +10,7 @@ spec:
   - name: https
     protocol: HTTPS
     port: 443
-    # hostname: "nginx.34.123.186.239.nip.io"
+    hostname: "envoy.34.46.204.115.nip.io"
     tls:
       mode: Terminate
       certificateRefs:
@@ -32,13 +32,13 @@ metadata:
 spec:
   parentRefs:
   - name: envoy-mtls-gateway
-  # hostnames:
-  # - "nginx.34.123.186.239.nip.io"
+  hostnames:
+  - "envoy.34.46.204.115.nip.io"
   rules:
   - matches:
     - path:
         type: PathPrefix
         value: /
     backendRefs:
-    - name: python-nginx-service
+    - name: python-envoy-service
       port: 80
