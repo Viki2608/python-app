@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: poc
-        image: us-central1-docker.pkg.dev/playground-s-11-07d68427/my-repo/poc:v1      
+        image: us-central1-docker.pkg.dev/playground-s-11-dec78e00/my-repo/poc:v1      
         ports:
         - containerPort: 8000
 ---
