@@ -35,6 +35,7 @@ async def validate_user(request: Request, user_id: str):
     cert_format = "pem"
     used_header = "None"
 
+    logger.info(f"ALL HEADERS => {dict(request.headers)}")
     # 1. Detection Logic (Fingerprinting)
     # Check for HAProxy (using our custom 'x-proxy-id' header signature)
     if headers.get("x-proxy-id") == "haproxy-ingress":
