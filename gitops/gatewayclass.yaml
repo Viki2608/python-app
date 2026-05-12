@@ -2,6 +2,7 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: GatewayClass
 metadata:
   name: envoy # This MUST match the gatewayClassName in your Gateway resource
+  namespace: envoy
 spec:
   controllerName: gateway.envoyproxy.io/gatewayclass-controller
   description: "Envoy Gateway Class for PoC edge routing"

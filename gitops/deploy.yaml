@@ -2,16 +2,16 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: python-traefik-demo
-  namespace: traefik-ingress-demo
+  namespace: envoy
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: python-traefik-demo
+      app: python-envoy-demo
   template:
     metadata:
       labels:
-        app: python-traefik-demo
+        app: python-envoy-demo
     spec:
       containers:
       - name: poc
@@ -22,12 +22,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: traefik-service
-  namespace: traefik-ingress-demo
+  name: python-envoy-service
+  namespace: envoy
 spec:
   type: ClusterIP
   selector:
-    app: python-traefik-demo
+    app: python-envoy-demo
   ports:
   - port: 80
     targetPort: 8000
