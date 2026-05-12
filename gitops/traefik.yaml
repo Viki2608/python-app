@@ -20,3 +20,7 @@ metadata:
 spec:
   passTLSClientCert:
     pem: true # Injects the X-Forwarded-Tls-Client-Cert header
+    info:
+      subject:
+        commonName: true
+        organization: true
