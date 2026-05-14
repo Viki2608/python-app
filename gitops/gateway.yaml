@@ -6,22 +6,20 @@ metadata:
   annotations:
     traefik.io/gateway-listeners-options: |
       https:
-        tlsOptions: mtls-policy@kubernetescrd
+        tlsOptions: gateway-api-demo-mtls-policy@kubernetescrd
 spec:
   gatewayClassName: traefik-gateway-class
-
   listeners:
     - name: https
       hostname: "traefikgw.34.16.10.39.nip.io"
       protocol: HTTPS
       port: 443
-
       tls:
         mode: Terminate
         certificateRefs:
           - kind: Secret
             name: nginx-server-certs
-
       allowedRoutes:
         namespaces:
           from: All
+---
