@@ -10,7 +10,7 @@ spec:
   - name: https
     protocol: HTTPS
     port: 443
-    hostname: "envoy.34.122.18.240.nip.io"
+    hostname: "envoy.136.113.250.194.nip.io"
     tls:
       mode: Terminate
       certificateRefs:
@@ -51,7 +51,7 @@ spec:
   parentRefs:
   - name: envoy-mtls-gateway
   hostnames:
-  - "envoy.34.122.18.240.nip.io"
+  - "envoy.136.113.250.194.nip.io"
   rules:
   - matches:
     - path:
