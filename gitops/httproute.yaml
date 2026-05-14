@@ -7,7 +7,7 @@ spec:
   parentRefs:
   - name: traefik-gateway
   hostnames:
-    - "gatewayapi.35.222.132.108.nip.io"
+    - "traefikgw.34.16.10.39.nip.io"
   rules:
   - filters:
     - type: ExtensionRef
@@ -16,7 +16,7 @@ spec:
         kind: Middleware
         name: pass-client-cert
     matches:
-    - hostname: "gatewayapi.35.222.132.108.nip.io"
+    - hostname: "traefikgw.34.16.10.39.nip.io"
     backendRefs:
     - name: gateway-api-demo-service
       port: 80

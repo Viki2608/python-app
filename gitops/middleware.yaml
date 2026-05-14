@@ -1,3 +1,16 @@
+# 1. Traefik-specific mTLS Policy
+apiVersion: traefik.io/v1alpha1
+kind: TLSOption
+metadata:
+  name: mtls-policy
+  namespace: gateway-api-demo
+spec:
+  clientAuth:
+    secretNames:
+      - my-ca-secret # Your Root CA secret
+    clientAuthType: RequireAndVerifyClientCert
+
+---
 # 3. Middleware to inject the client cert into the header
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
