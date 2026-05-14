@@ -1,4 +1,3 @@
-# 2. The Entry Point (Gateway)
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
@@ -7,17 +6,22 @@ metadata:
   annotations:
     traefik.io/gateway-listeners-options: |
       https:
-        tlsOptions: gateway-api-demo-mtls-policy@kubernetescrd
+        tlsOptions: mtls-policy@kubernetescrd
 spec:
   gatewayClassName: traefik-gateway-class
+
   listeners:
-  - name: https
-    protocol: HTTPS
-    port: 443
-    tls:
-      mode: Terminate
-      certificateRefs:
-      - name: nginx-server-certs # Your server certificate
-    allowedRoutes:
-      namespaces:
-        from: All
+    - name: https
+      hostname: "traefikgw.34.16.10.39.nip.io"
+      protocol: HTTPS
+      port: 443
+
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: nginx-server-certs
+
+      allowedRoutes:
+        namespaces:
+          from: All
